@@ -1,9 +1,9 @@
 import time
 
 
-from laby1.KMP_matching import kmp_string_matching, prefix_function
-from laby1.fa_matchnig import fa_string_matching, transition_table
-from laby1.naive_matching import naive_string_matching
+from labs1.KMP_matching import kmp_string_matching, prefix_function
+from labs1.fa_matchnig import fa_string_matching, transition_table
+from labs1.naive_matching import naive_string_matching
 
 
 def count_time(func, *args):
