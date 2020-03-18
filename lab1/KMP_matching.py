@@ -1,5 +1,7 @@
-def kmp_string_matching(text, pattern, pi):
-    # pi = prefix_function(pattern)
+def kmp_string_matching(text, pattern, pi=None):
+    # pi = prefix_function(pattern)4
+    if pi is None:
+        pi = prefix_function(pattern)
     result = []
     q = 0
     for i in range(0, len(text)):
