@@ -32,31 +32,64 @@ def mcCreight(text):
     # root.print_children()
     for i in range(1, len(text)):
         suffix = text[i:]
-        print(suffix)
+
         p = last_head.label
         q = leaf.label
         label = ""
+        print(suffix, ", p:", p, ", q:", q)
         if last_head == root:
             q = q[1:]
             head, label = root.slow_find(q)
         else:
             u = last_head.parent
+            print(u.label)
 
             if u == root:
                 # print("p:", p)
                 p = p[1:]
                 head, label = root.fast_find(p)
-                print(head.label)
             else:
                 head, label = u.link.fast_find(p)
-            head, label = head.slow_find(q)
+            # head, label = head.slow_find(q)
             last_head.link = head
-        leaf = Node(suffix[head.get_summary_length():])
-        leaf.parent = head
-        head.children.append(leaf)
+        if suffix[head.get_summary_length():]:
+            leaf = Node(suffix[head.get_summary_length():])
+            # print("new leaf:", leaf.label)
+            leaf.parent = head
+            head.children.append(leaf)
         root.print_children()
         last_head = head
         print("-------------", i, "------------------")
+    return root
+
+
+@print_timer
+def mcCreight_slow_version(text):
+    root = Node("*")
+    node = Node(text)
+    root.children.append(node)
+    node.parent = root
+    root.parent = root
+    last_head = root
+    head = root
+    leaf = node
+    # root.print_children()
+    for i in range(1, len(text)):
+        suffix = text[i:]
+
+        # p = last_head.label
+        # q = leaf.label
+        label = ""
+        # print(suffix, ", p:", p, ", q:", q)
+        head, label = root.slow_find(suffix)
+        if suffix[head.get_summary_length():]:
+            leaf = Node(suffix[head.get_summary_length():])
+            # print("new leaf:", leaf.label)
+            leaf.parent = head
+            head.children.append(leaf)
+        # root.print_children()
+        last_head = head
+        # print("-------------", i, "------------------")
     return root
 
 
@@ -68,13 +101,13 @@ def check(root: Node, text):
 
 
 def main():
-    # tree = TrieTree()
+    tree = TrieTree()
     # text = input("Give text: ")
-    text = "asdasdasdasdasasdasdasdasdasdasdasdasdasdadsadsd$"
-    # create_trie_tree(text, tree)
-    root = mcCreight(text)
+    text = "asdasdadadadadadsadaduasgduyasgdyaugsdahsgdahgdajhashgdjadadasd$"
+    create_trie_tree(text, tree)
+    root = mcCreight_slow_version(text)
     # root.print_children()
-    # print(root.is_there("sas$"))
+    # print(root.is_there("dsd"))
     # check(root, text)
 
 
