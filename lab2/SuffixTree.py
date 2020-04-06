@@ -15,7 +15,6 @@ class Node:
 
     def get_longest_prefix(self, label):
         common_prefix = ""
-        # print("get_longest_prefix:", label, self.label)
         i = 0
         while i < len(label) and i < len(self.label):
             if self.label[i] == label[i]:
@@ -28,16 +27,12 @@ class Node:
     def break_path(self, label):
         child = self.get_child_with_first_letter(label[0])
         new_node = Node(child.get_longest_prefix(label))
-        # print("break_path", new_node.label)
         self.children.remove(child)
         self.children.append(new_node)
         new_node.parent = self
         new_node.children.append(child)
         child.parent = new_node
         child.label = child.label[len(new_node.label):]
-        # new_child = Node(label[len(new_node.label):])
-        # new_node.children.append(new_child)
-        # new_child.parent = new_node
         return new_node, label[len(new_node.label):]  # , new_child
 
     def fast_find(self, label):
@@ -53,7 +48,6 @@ class Node:
         return self.break_path(label)
 
     def slow_find(self, label):
-        # print(":", label)
         if not label:
             return self, label
         child = self.get_child_with_first_letter(label[0])

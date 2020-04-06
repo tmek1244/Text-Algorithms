@@ -1,6 +1,19 @@
+import time
+
+
+def print_timer(func):
+    def inner(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        print("Time for ", func.__name__, ": ", time.perf_counter() - start)
+        return result
+
+    return inner
+
+
 class SuffixNode(object):
     id = 0
-
+    text = ""
     def __init__(self, text):
         self.id = SuffixNode.id
         SuffixNode.id += 1
@@ -9,7 +22,7 @@ class SuffixNode(object):
         self.suffix_link = None
         self.i_from = 0
         self.i_to = 0
-        self.text = text
+        SuffixNode.text = text
 
     @property
     def length(self):
@@ -19,12 +32,12 @@ class SuffixNode(object):
         if i_from == i_to:
             print("add\n")
             return self
-        child = SuffixNode(self.text)
+        child = SuffixNode(SuffixNode.text)
         child.i_from = i_from
         child.i_to = i_to
         child.parent = self
         # print("add:", i_from, i_to)
-        self[self.text[i_from]] = child
+        self[SuffixNode.text[i_from]] = child
         return child
 
     def split(self, i_split):
@@ -36,14 +49,14 @@ class SuffixNode(object):
         if i_split == i_to:
             return
 
-        child = SuffixNode(self.text)
+        child = SuffixNode(SuffixNode.text)
         child.i_from = self.i_from
         child.i_to = i_split
         self.i_from = i_split
         child.parent = self.parent
         child.parent[child.text[i_from]] = child
         self.parent = child
-        child[self.text[i_split]] = self
+        child[SuffixNode.text[i_split]] = self
 
     def find(self, label):
         if len(label) <= self.length:
@@ -57,7 +70,7 @@ class SuffixNode(object):
 
     @property
     def label(self):
-        return self.text[self.i_from: self.i_to]
+        return SuffixNode.text[self.i_from: self.i_to]
 
     def __getitem__(self, ident):
         return self.children[ident]
@@ -124,11 +137,11 @@ def McCreight(text):
     head = root
     leaf = root.add(0, text_len)
     for j in range(1, text_len):
-        print("------------------", j, "------------------")
+        # print("------------------", j, "------------------")
         # print("text:", text[j:])
         # print(root)
         if head == root:
-            print("slow scan")
+            # print("slow scan")
             # print(root)
             # print("=========================")
             head, leaf = slow_scan(root, leaf.i_from + 1, leaf.i_to)
@@ -137,12 +150,12 @@ def McCreight(text):
             continue
         parent = head.parent
         if parent == root:
-            print("fast scan")
+            # print("fast scan")
             # print(root)
             # print("=========================")
             head_sl, i = fast_scan(parent, head.i_from + 1, head.i_to)
         else:
-            print("fast scan with suffix link")
+            # print("fast scan with suffix link")
             head_sl, i = fast_scan(parent.suffix_link, head.i_from, head.i_to)
         if i < head_sl.i_to:
             # s(head) is in the middle of an edge
@@ -166,10 +179,9 @@ def McCreight(text):
 if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
-    from lab2.main import check
-    file = open('1997_714 (1).txt', 'r')
+    file = open('ustawa.txt', 'r')
     text = file.read().replace('\n', ' ')
-    print(len(text))
+    # print(len(text))
     text = text + "#"
     # text = "dasdaasdas$"
     # print(text)
@@ -177,12 +189,12 @@ if __name__ == '__main__':
     # print(root)
     # print(root.find("as"))
     print("tree builded")
-    something_wrong = False
-    for i in range(0, len(text), 1000):
-        for j in range(i + 1, len(text), 1000):
-            if not root.find(text[i:j]):
-                print(text[i:j])
-                something_wrong = True
-    if not something_wrong:
-        print("all good")
+    # something_wrong = False
+    # for i in range(0, len(text), 1000):
+    #     for j in range(i + 1, len(text), 1000):
+    #         if not root.find(text[i:j]):
+    #             print(text[i:j])
+    #             something_wrong = True
+    # if not something_wrong:
+    #     print("all good")
     # file.close()
