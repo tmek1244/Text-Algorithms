@@ -66,6 +66,7 @@ def get_text(which_text):
         text = file.read().replace('\n', ' ')
         # print(len(text))
         text = text + "#"
+        file.close()
         return text
 
 
