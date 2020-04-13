@@ -20,7 +20,7 @@ def static_huffman(text):
     return huffman_code
 
 
-class Compressor:
+class StaticCompressor:
     def __init__(self, function_to_compress):
         self.function_to_compress = function_to_compress
         self.huffman_code = None
@@ -61,16 +61,13 @@ class Compressor:
         return ''.join([str(int(x)) for x in bitarray_string])
 
     def decompress(self, file):
-        print("decompress")
         bits_array = bitarray()
         with open(file, "rb") as input_file:
             bits_array.fromfile(input_file)
 
         bits = self.convert_bitarray_to_string(bits_array)
         bits = self.remove_pad(bits)
-        output_file = open("decompressed.txt", "w")
 
-        print(bits)
         decoded_text = ""
         current_part = ""
         for bit in bits:
@@ -78,12 +75,11 @@ class Compressor:
             if current_part in self.reversed_huffman_code:
                 decoded_text += self.reversed_huffman_code[current_part]
                 current_part = ""
-        print(decoded_text)
-        output_file.write(decoded_text)
-        output_file.close()
+        with open("decompressed.txt", "w") as output_file:
+            output_file.write(decoded_text)
 
 
 if __name__ == '__main__':
-    compressor = Compressor(static_huffman)
+    compressor = StaticCompressor(static_huffman)
     compressor.compress("cos.txt")
     compressor.decompress("compressed.txt")
