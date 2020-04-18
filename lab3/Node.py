@@ -18,24 +18,6 @@ class Node:
         return huffman_code
 
     def increment(self):
-
-        # if right_sibling and right_sibling.count < self.count:
-        #     print("increment: ", self)
-        #     self.swap_with_sibling()
-        # if self.parent and self.parent.parent and self.parent.parent.right and self.parent.parent.left:
-        #     parent_sibling = self.parent.parent.right if self.parent.parent.left == self.parent \
-        #         else self.parent.parent.left
-        #     print(parent_sibling)
-        #     if parent_sibling.count < self.count:
-        #         self.swap_with_other_node(parent_sibling)
-        #     elif parent_sibling.right and parent_sibling.right.count < self.count:
-        #         self.swap_with_other_node(parent_sibling.right)
-        #     elif parent_sibling.left and parent_sibling.left.count < self.count:
-        #         self.swap_with_other_node(parent_sibling.left)
-        # if self.parent:
-        #     self.parent.increment()
-
-        # ---------------------------------
         self.count += 1
         if self.parent and self.parent.parent and self.parent.parent.right and self.parent.parent.left:
             parent_sibling = self.parent.parent.right if self.parent.parent.left == self.parent \
@@ -86,7 +68,6 @@ class Node:
 
     def print_tree(self):
         queue = [(self, "")]
-
         while len(queue) > 0:
             next_node = queue[0]
             queue = queue[1:]
@@ -95,11 +76,28 @@ class Node:
                 queue.append((node.right, next_node[1] + ">"))
             if node.left:
                 queue.append((node.left, next_node[1] + ">"))
-        # if self.left:
-        #     self.left.print_tree(indentation + '>')
-        # if self.right:
-        #     self.right.print_tree(indentation + '>')
-        # print(indentation, "letter:", self.letter, "count:", self.count)
+            print(next_node[1], next_node[0])
+
+    def tree_to_string(self):
+        queue = [self]
+        result = ""
+
+        while len(queue) > 0:
+            next_node = queue[0]
+            queue = queue[1:]
+            cos = "1"
+            if next_node.letter:
+                tmp = next_node.letter
+                cos = "0" + str(bin(ord(tmp)))[2:]
+                if len(cos) < 8:
+                    cos = (8 - len(cos)) * '0' + cos
+            # print(next_node, cos)
+            result += cos
+            if next_node.right:
+                queue.append(next_node.right)
+            if next_node.left:
+                queue.append(next_node.left)
+        return result
 
     def __str__(self):
         return ''.join(["letter: ", str(self.letter), " count: ", str(self.count)])

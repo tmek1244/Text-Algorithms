@@ -5,6 +5,7 @@ from bitarray import bitarray
 
 
 from lab3.DynamicHuffman import dynamic_huffman
+from lab3.Node import Node
 from lab3.StaticHuffman import static_huffman
 
 
@@ -16,6 +17,33 @@ def print_timer(func):
         return result
 
     return inner
+
+
+def string_tree_to_dictionary(string):
+    queue = []
+    while string:
+        next_bit = string[0]
+        string = string[1:]
+        if next_bit == "1":
+            queue.append(Node())
+        else:
+            letter = chr(int(string[:7], 2))
+            string = string[7:]
+            queue.append(Node(letter=letter))
+
+    root = queue.pop(0)
+    second_queue = [root]
+    while second_queue:
+        right_element = queue.pop(0)
+        left_element = queue.pop(0)
+        next_node = second_queue.pop(0)
+        next_node.right = right_element
+        next_node.left = left_element
+        if right_element.letter is None:
+            second_queue.append(right_element)
+        if left_element.letter is None:
+            second_queue.append(left_element)
+    return root.create_code()
 
 
 class StaticCompressor:
@@ -32,17 +60,28 @@ class StaticCompressor:
         encoded_text = padded_info + encoded_text + extra_padding * '0'
         return encoded_text
 
+    @staticmethod
+    def add_string_tree_info(string_tree):
+        length_in_bits = "{0:0b}".format(len(string_tree))
+        base = list("0000000000000000")
+        for i in range(1, len(length_in_bits) + 1):
+            base[-i] = length_in_bits[-i]
+        base = ''.join(base)
+        return base + string_tree
+
     @print_timer
     def compress(self, file):
         with open(file, "r") as input_file:
             text = input_file.read()
 
-        self.huffman_code = self.function_to_compress(text)
-        self.reversed_huffman_code = {v: k for k, v in self.huffman_code.items()}
+        self.huffman_code, string_tree = self.function_to_compress(text)
 
         encoded_text = ''.join([self.huffman_code[letter] for letter in text])
+        # print(string_tree)
+        string_tree = self.add_string_tree_info(string_tree)
+        encoded_text = string_tree + encoded_text
         encoded_text = self.pad_encoded_text(encoded_text)
-
+        # print(encoded_text)
         with open("compressed_input.txt", "wb") as output_file:
             bitarray(encoded_text).tofile(output_file)
 
@@ -52,6 +91,16 @@ class StaticCompressor:
         padded_info = encoded_text[:8]
         padding_length = int(padded_info, 2)
         return encoded_text[8:-padding_length]
+
+    def get_huffman_code(self, string):
+        length = int(string[:16], 2)
+        string = string[16:]
+        string_tree = string[:length]
+        # print(string_tree)
+        # print(self.huffman_code)
+        # print(string_tree_to_dictionary(string_tree))
+        self.reversed_huffman_code = {v: k for k, v in string_tree_to_dictionary(string_tree).items()}
+        return string[length:]
 
     @staticmethod
     def convert_bitarray_to_string(bitarray_string):
@@ -65,6 +114,7 @@ class StaticCompressor:
 
         bits = self.convert_bitarray_to_string(bits_array)
         bits = self.remove_pad(bits)
+        bits = self.get_huffman_code(bits)
 
         decoded_text = ""
         current_part = ""
@@ -80,7 +130,7 @@ class StaticCompressor:
 def main():
     # file_to_compress = input("Give file name from data_for_tests: ")
     for file in ["1kB.txt", "10kB.txt", "100kB.txt", "1MB.txt"]:
-        for method in [dynamic_huffman, static_huffman]:
+        for method in [static_huffman, dynamic_huffman]:
             print("--------", file, "  ", method.__name__, "--------")
             file_to_compress = "data_for_tests/" + file
             compressor = StaticCompressor(method)

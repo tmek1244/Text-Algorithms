@@ -1,4 +1,44 @@
+import time
+
 from lab3.Node import Node
+
+
+def print_timer(func):
+    def inner(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        print("Time for ", func.__name__, ": ", time.perf_counter() - start)
+        return result
+
+    return inner
+
+
+def string_tree_to_dictionary(string):
+    queue = []
+    while string:
+        print(string)
+        next_bit = string[0]
+        string = string[1:]
+        if next_bit == "1":
+            queue.append(Node())
+        else:
+            letter = chr(int(string[:7], 2))
+            string = string[7:]
+            queue.append(Node(letter=letter))
+
+    root = queue.pop(0)
+    second_queue = [root]
+    while second_queue:
+        right_element = queue.pop(0)
+        left_element = queue.pop(0)
+        next_node = second_queue.pop(0)
+        next_node.right = right_element
+        next_node.left = left_element
+        if right_element.letter is None:
+            second_queue.append(right_element)
+        if left_element.letter is None:
+            second_queue.append(left_element)
+    return root.create_code()
 
 
 def static_huffman(text):
@@ -40,5 +80,16 @@ def static_huffman(text):
             leafs = leafs[1:]
         else:
             internal_nodes = internal_nodes[1:]
+    return internal_nodes[0].create_code(), internal_nodes[0].tree_to_string()
 
-    return internal_nodes[0].create_code()
+
+def main():
+    text_for_test = "bookkeeper"
+    dictionary, string = static_huffman(text_for_test)
+    print("dictionary: ", dictionary)
+    print("string: ", string)
+    print(dictionary == string_tree_to_dictionary(string))
+
+
+if __name__ == '__main__':
+    main()
