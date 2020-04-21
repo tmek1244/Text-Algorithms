@@ -1,25 +1,11 @@
-import time
-
 from lab3.Node import Node
 
 
-def print_timer(func):
-    def inner(*args, **kwargs):
-        start = time.perf_counter()
-        result = func(*args, **kwargs)
-        print("Time for ", func.__name__, ": ", time.perf_counter() - start)
-        return result
-
-    return inner
-
-
-def dynamic_huffman(text):
+def dynamic_huffman_tree(text):
     root = Node(count=0, letter="#")
     nodes = {"#": root}
 
-    # print("----------------------------")
     for letter in text:
-        # print("Next letter: ", letter)
         if letter in nodes:
             node = nodes[letter]
             node.increment()
@@ -36,12 +22,10 @@ def dynamic_huffman(text):
             updated_node.letter = None
             updated_node.increment()
 
-        # root.print_tree()
-        # print("----------------------------")
-    return root.create_code(), root.tree_to_string()
+    return root
 
 
 if __name__ == '__main__':
     test_text = "bookkeeper"
-    code = dynamic_huffman(test_text)
-    print(code)
+    tree_root = dynamic_huffman_tree(test_text)
+    print(tree_root.create_code(), tree_root.tree_to_string())

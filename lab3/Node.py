@@ -91,7 +91,6 @@ class Node:
                 cos = "0" + str(bin(ord(tmp)))[2:]
                 if len(cos) < 8:
                     cos = (8 - len(cos)) * '0' + cos
-            # print(next_node, cos)
             result += cos
             if next_node.right:
                 queue.append(next_node.right)
