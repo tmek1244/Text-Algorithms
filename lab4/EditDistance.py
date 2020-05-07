@@ -1,18 +1,70 @@
 import numpy as np
 
 
-def edit_distance(x, y):
-    edit_table = np.empty((len(x)+1, len(y)+1))
+def delta1(a, b):
+    return a != b
 
-    for i in range(len(x) + 1):
-        edit_table[i, 0] = i
-    for j in range(len(y) + 1):
-        edit_table[0, j] = j
 
-    for i in range(len(x)):
-        for j in range(len(y)):
-            edit_table[i+1][j+1] = min(edit_table[i][j+1] + 1,
-                                       edit_table[i+1][j] + 1,
-                                       edit_table[i][j] + (x[i] != y[j]))
+def edit_distance(input_text, output_text, delta):
+    print(input_text, output_text)
+    edit_table = np.empty((len(input_text) + 1, len(output_text) + 1))
+
+    for i_in in range(len(input_text) + 1):
+        edit_table[i_in, 0] = i_in
+    for i_out in range(len(output_text) + 1):
+        edit_table[0, i_out] = i_out
+
+    for i_in in range(len(input_text)):
+        for i_out in range(len(output_text)):
+            edit_table[i_in + 1][i_out + 1] = \
+                min(edit_table[i_in][i_out + 1] + 1,
+                    edit_table[i_in + 1][i_out] + 1,
+                    edit_table[i_in][i_out] + delta(input_text[i_in], output_text[i_out]))
     print(edit_table)
-    return edit_table
+
+    i_out = 0
+    i_in = 0
+    counter = 0
+    created_word = input_text
+    while i_out != len(output_text) or i_in != len(input_text):
+        # print("current word:", created_word)
+        before = created_word
+        right = edit_table[i_in][i_out + 1] if i_out < len(output_text) else float('inf')
+        diagonal = edit_table[i_in + 1][i_out + 1] \
+            if i_in < len(input_text) and i_out < len(output_text) else float('inf')
+        # print("(", i_in, ",", i_out, ")     ", right, diagonal)
+        down = edit_table[i_in + 1][i_out] if i_in < len(input_text) else float('inf')
+        min_step = min(right, diagonal, down)
+
+        if min_step == diagonal:
+            if edit_table[i_in][i_out] == edit_table[i_in+1][i_out+1]:
+                print("ta sama literka", input_text[i_in])
+            else:
+                print("zmien litere:", input_text[i_in], "->", output_text[i_out])
+                # print(i_out+1, i_in+1)
+                created_word = created_word[:i_in+counter] + output_text[i_out] + created_word[i_in+1+counter:]
+            i_out += 1
+            i_in += 1
+        elif min_step == right:
+            print("dodaj literke", output_text[i_out])
+            counter += 1
+            created_word = created_word[:i_in] + output_text[i_out] + created_word[i_in:]
+            i_out += 1
+        elif min_step == down:
+            print("usuwamy litere")
+            created_word = created_word[:i_in+counter] + created_word[i_in+1+counter:]
+            i_in += 1
+            counter -= 1
+
+        print(before, '-->', created_word)
+        print()
+        print("before: ", before)
+        print("current:", created_word)
+        print("pattern:", output_text)
+        print('--------------------------')
+        # elif min_step == down:
+        #     print(j, i+1)
+        #     i += 1
+        # print(i_in, i_out)
+
+    return edit_table[-1][-1]
