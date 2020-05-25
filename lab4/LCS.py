@@ -12,24 +12,24 @@ def delta2(x, y):
 def lcs(x, y, delta=delta2):
     table = edit_distance(x, y, delta)
     distance = table[-1][-1]
-    common = []
-    k, m = len(x), len(y)
-    while k >= 0 and m >= 0 and not (k == 0 == m):
-        if delta(x[k - 1], y[m - 1]) == 0:
-            common.append(x[k - 1] if len(x[k - 1]) <= len(y[m - 1]) else y[m - 1])
-            k -= 1
-            m -= 1
-        elif k - 1 >= 0 and m - 1 >= 0:
-            if table[k - 1][m] < table[k][m - 1]:
-                k -= 1
+    words_in_lcs = []
+    x_iter, y_iter = len(x) - 1, len(y) - 1
+    while x_iter >= 0 and y_iter >= 0:
+        if delta(x[x_iter], y[y_iter]) == 0:
+            words_in_lcs.append(x[x_iter])
+            x_iter -= 1
+            y_iter -= 1
+        elif x_iter - 1 > 0 and y_iter - 1 > 0:
+            if table[x_iter + 1][y_iter] > table[x_iter][y_iter + 1]:
+                x_iter -= 1
             else:
-                m -= 1
-        elif k - 1 >= 0:
-            k -= 1
-        elif m - 1 >= 0:
-            m -= 1
+                y_iter -= 1
+        elif x_iter - 1 > 0:
+            x_iter -= 1
+        elif y_iter - 1 > 0:
+            y_iter -= 1
 
-    return (len(x) + len(y) - distance) // 2, list(reversed(common))
+    return (len(x) + len(y) - distance) // 2, list(reversed(words_in_lcs))
 
 
 def file_to_tokens(path):
@@ -37,7 +37,6 @@ def file_to_tokens(path):
     with open(path, 'r') as file:
         text = file.read()
         tokens = tokenizer(text)
-    # print(dir(list(tokens)))
     return list(map(str, tokens))
 
 
@@ -67,7 +66,7 @@ def main():
     # create_smaller_version(path, smaller_version, 0.03)
     tokens1 = file_to_tokens(path)
     tokens2 = file_to_tokens(smaller_version)
-    print(lcs(tokens1, tokens2))
+    print("LCS length:", lcs(tokens1, tokens2)[0])
     print(len(tokens1), len(tokens2))
 
 

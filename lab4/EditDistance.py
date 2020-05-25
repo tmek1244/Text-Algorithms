@@ -31,12 +31,10 @@ def visualization(input_text, output_text, edit_table=None):
     counter = 0
     created_word = input_text
     while i_out != len(output_text) or i_in != len(input_text):
-        # print("current word:", created_word)
         before = created_word
         right = edit_table[i_in][i_out + 1] if i_out < len(output_text) else float('inf')
         diagonal = edit_table[i_in + 1][i_out + 1] \
             if i_in < len(input_text) and i_out < len(output_text) else float('inf')
-        # print("(", i_in, ",", i_out, ")     ", right, diagonal)
         down = edit_table[i_in + 1][i_out] if i_in < len(input_text) else float('inf')
         min_step = min(right, diagonal, down)
         same_letter = False
@@ -72,11 +70,11 @@ def main():
     # a = 'los'
     # b = 'kloc'
 
-    a = 'Łódź'
-    b = 'Lodz'
+    # a = 'Łódź'
+    # b = 'Lodz'
 
-    # a = 'kwintesencja'
-    # b = 'quintessence'
+    a = 'kwintesencja'
+    b = 'quintessence'
 
     # a = 'ATGAATCTTACCGCCTCG'
     # b = 'ATGAGGCTCTGGCCCCTG'
