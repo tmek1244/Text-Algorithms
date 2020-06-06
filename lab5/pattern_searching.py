@@ -106,6 +106,7 @@ def search_patterns(text, patterns, print_output=False, print_time=False, return
     time2 = time()
     i = -1 * len(patterns[0]) + 1
     count = 0
+    print(len(patterns_pattern))
     for row in states:
         S = kmp_string_matching(row, patterns_pattern)
         lenS = len(S)

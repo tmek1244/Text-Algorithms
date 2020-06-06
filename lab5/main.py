@@ -127,10 +127,10 @@ genetics the p a t t e r n can correspond to a gene t h a t can be very long; in
 
 def main():
     # task2()
-    task3()
+    # task3()
     # task4()
     # task5()
-    # task6()
+    task6()
     # task7()
 
 
